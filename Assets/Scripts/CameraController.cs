@@ -16,11 +16,12 @@ public class CameraController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        targetPos = playerTransform.position + new Vector3(0f, 3f, -10f);
+        targetPos = playerTransform.position + (playerTransform.up * 3f) + (-playerTransform.forward * 10f);
         targetRot = Quaternion.Euler(10f, 0f, 0f);
 
-        transform.position = targetPos;
-        transform.rotation = targetRot;
+        // move 90% of the way to our target every second for some smoothing
+        transform.position = Vector3.Lerp(transform.position, targetPos, 0.95f * Time.deltaTime);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, 0.95f * Time.deltaTime);
 	}
 
 
