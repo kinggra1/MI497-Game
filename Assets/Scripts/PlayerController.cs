@@ -33,9 +33,21 @@ public class PlayerController : MonoBehaviour {
     private Vector3 sideRayMinHeight;
     private Vector3 sideRayMaxHeight;
 
+    private Vector3 waypointLeft;
+    private Vector3 waypointRight;
+    private Vector3 waypointArcCenter;
+    private float waypointProgress;
+
 	// Use this for initialization
 	void Start () {
 
+    }
+
+    public void setWaypointInfo(Vector3 left, Vector3 right, Vector3 center, float progress) {
+        waypointLeft = left;
+        waypointRight = right;
+        waypointArcCenter = center;
+        waypointProgress = progress;
     }
 
     // ... not really using this right now

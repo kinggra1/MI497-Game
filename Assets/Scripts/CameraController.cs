@@ -6,14 +6,19 @@ public class CameraController : MonoBehaviour {
     public enum CameraMovement { SmoothFollow, Static, StaticRotate }
     private CameraMovement type = CameraMovement.SmoothFollow;
 
-    public Vector3 defaultOffset = new Vector3(0f, 3f, 10f);
-    public Quaternion defaultRotation = Quaternion.Euler(10f, 0f, 0f);
+    public static Vector3 defaultOffset = new Vector3(0f, 3f, -10f);
+    public static Quaternion defaultRotation = Quaternion.Euler(10f, 0f, 0f);
 
     public PlayerController playerController;
     private Transform playerTransform;
 
-    private Vector3 targetPos { get; set; }
-    private Quaternion targetRot { get; set; }
+    public Vector3 cameraOffset { get; set; }
+    public Vector3 targetPos { get; set; }
+    public Quaternion targetRot { get; set; }
+
+    public void SetMovementType(CameraMovement newType) {
+        type = newType;
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -31,6 +36,10 @@ public class CameraController : MonoBehaviour {
 
             // we do not update our target position, only go to the specified target position (set externally)
             case CameraMovement.Static:
+                break;
+
+            case CameraMovement.StaticRotate:
+                targetRot = Quaternion.LookRotation(playerTransform.position - transform.position);
                 break;
         }
 
