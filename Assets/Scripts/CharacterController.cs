@@ -26,6 +26,7 @@ public class CharacterController : MonoBehaviour {
 	private bool onGround = false;
 	private bool onRightLadder = false;
     private bool onLeftLadder = false;
+	private bool waypointFollow = false;
 
     private Vector3 sideRayMinHeight;
     private Vector3 sideRayMaxHeight;
@@ -182,4 +183,8 @@ public class CharacterController : MonoBehaviour {
 		newPos += transform.up * vVelocity * Time.deltaTime;
 		transform.position = newPos;
 	}
+
+
+
+	// when we reach an extreme of 0 or 1 in the slerp, turn off waypointNav
 }

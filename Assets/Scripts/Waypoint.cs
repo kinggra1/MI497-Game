@@ -46,7 +46,8 @@ public class Waypoint : MonoBehaviour {
                         case PlayerDestination.None:
                             break;
                         case PlayerDestination.Waypoint:
-                            player.setWaypointInfo(leftDestination.transform.position, player.transform.position);
+							player.setWaypointInfo(leftDestination, this, 
+								calculateArcCenter(leftDestination, this), 0f);
                             break;
                     }
 
@@ -70,11 +71,17 @@ public class Waypoint : MonoBehaviour {
                         case PlayerDestination.None:
                             break;
                         case PlayerDestination.Waypoint:
-                            player.setWaypointInfo(player.transform.position, rightDestination.transform.position);
-                            break;
+							 player.setWaypointInfo(this, rightDestination, 
+								calculateArcCenter(this, rightDestination), 0f);
+							break;
                     }
                     break;
             }
         }
-    }
+	}
+
+	public static Vector3 calculateArcCenter(Waypoint left, Waypoint right) {
+		//Ray line1 = new Ray(left.transform.position, 
+		return Vector3.zero;
+	}
 }
