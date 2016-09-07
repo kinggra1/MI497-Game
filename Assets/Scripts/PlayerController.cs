@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour {
 	private float hVelocity = 0f;
 	private float vVelocity = 0f;
 	private Vector3 newPos;
+	private Quaternion newRot;	
 
 	private bool onGround = false;
 	private bool onRightLadder = false;
@@ -33,6 +34,7 @@ public class PlayerController : MonoBehaviour {
     private Vector3 sideRayMinHeight;
     private Vector3 sideRayMaxHeight;
 
+	private bool followingWaypoint = false;
     private Vector3 waypointLeft;
     private Vector3 waypointRight;
     private Vector3 waypointArcCenter;
@@ -43,10 +45,13 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-    public void setWaypointInfo(Vector3 left, Vector3 right, Vector3 center, float progress) {
-        waypointLeft = left;
-        waypointRight = right;
-        waypointArcCenter = center;
+    public void setWaypointInfo(Waypoint left, Waypoint right, Vector3 center, float progress) {
+		waypointLeft = left.transform.position;
+		waypointRight = right.transform.position;
+
+		// TODO: Calculate center
+        //waypointArcCenter = center;
+
         waypointProgress = progress;
     }
 
@@ -151,50 +156,7 @@ public class PlayerController : MonoBehaviour {
                 transform.position += transform.up * vInput * climbSpeed * Time.deltaTime;
             }
         }
-
-
-        // collision corrections
-        // floor correction
-        hit = Physics.Raycast(transform.position, -transform.up, out hitInfo, 1f);
-        Debug.DrawRay(transform.position, -transform.up * 1f, Color.cyan);
-        if (hit) {
-            vVelocity = 0f;
-            transform.position = hitInfo.point + transform.up * 1f;
-        }
-
-        // ceiling correction
-        hit = Physics.Raycast(transform.position, transform.up, out hitInfo, 1f);
-        Debug.DrawRay(transform.position, transform.up * 1f, Color.cyan);
-        if (hit && vVelocity > 0) {
-            vVelocity = 0f;
-            transform.position = hitInfo.point + -transform.up * 1f;
-        }
-
-        // side corrections
-        sideRayMinHeight = transform.position - transform.up * 0.8f;
-        sideRayMaxHeight = transform.position + transform.up * 0.8f;
-        // right side
-        for (int i = 0; i < sideRayCount; i++) {
-            Vector3 origin = Vector3.Lerp(sideRayMinHeight, sideRayMaxHeight, i / (sideRayCount - 1));
-            hit = Physics.Raycast(origin, transform.right, out hitInfo, 0.5f);
-            Debug.DrawRay(origin, transform.right * 0.5f, Color.cyan);
-            if (hit) {
-                hVelocity = 0f;
-                transform.position = hitInfo.point - transform.right * 0.5f - (origin - transform.position); //(origin - transform.position) for height adjustment
-            }
-        }
-        // left side
-        for (int i = 0; i < 3; i++) {
-            Vector3 origin = Vector3.Lerp(sideRayMinHeight, sideRayMaxHeight, i / (sideRayCount - 1));
-            hit = Physics.Raycast(origin, -transform.right, out hitInfo, 0.5f);
-            Debug.DrawRay(origin, -transform.right * 0.5f, Color.cyan);
-            if (hit) {
-                hVelocity = 0f;
-                transform.position = hitInfo.point + transform.right * 0.5f - (origin - transform.position); // same as above
-            }
-        }
-        
-
+       
 
 
         // force upwards when jumping
@@ -213,10 +175,58 @@ public class PlayerController : MonoBehaviour {
 			vVelocity -= gravity * Time.deltaTime;
 		}
 
-		newPos = transform.position;
-		newPos += transform.right * hVelocity * Time.deltaTime;
-		newPos += transform.up * vVelocity * Time.deltaTime;
+		if (followingWaypoint) {
+			
+		} else {
+			newPos = transform.position;
+			newPos += transform.right * hVelocity * Time.deltaTime;
+			newPos += transform.up * vVelocity * Time.deltaTime;	
+		}
+		 
 		transform.position = newPos;
+
+
+
+		// collision corrections
+		// floor correction
+		hit = Physics.Raycast(transform.position, -transform.up, out hitInfo, 1f);
+		Debug.DrawRay(transform.position, -transform.up * 1f, Color.cyan);
+		if (hit) {
+			vVelocity = 0f;
+			transform.position = hitInfo.point + transform.up * 1f;
+		}
+
+		// ceiling correction
+		hit = Physics.Raycast(transform.position, transform.up, out hitInfo, 1f);
+		Debug.DrawRay(transform.position, transform.up * 1f, Color.cyan);
+		if (hit && vVelocity > 0) {
+			vVelocity = 0f;
+			transform.position = hitInfo.point + -transform.up * 1f;
+		}
+
+		// side corrections
+		sideRayMinHeight = transform.position - transform.up * 0.8f;
+		sideRayMaxHeight = transform.position + transform.up * 0.8f;
+		// right side
+		for (int i = 0; i < sideRayCount; i++) {
+			Vector3 origin = Vector3.Lerp(sideRayMinHeight, sideRayMaxHeight, i / (sideRayCount - 1));
+			hit = Physics.Raycast(origin, transform.right, out hitInfo, 0.5f);
+			Debug.DrawRay(origin, transform.right * 0.5f, Color.cyan);
+			if (hit) {
+				hVelocity = 0f;
+				transform.position = hitInfo.point - transform.right * 0.5f - (origin - transform.position); //(origin - transform.position) for height adjustment
+			}
+		}
+		// left side
+		for (int i = 0; i < 3; i++) {
+			Vector3 origin = Vector3.Lerp(sideRayMinHeight, sideRayMaxHeight, i / (sideRayCount - 1));
+			hit = Physics.Raycast(origin, -transform.right, out hitInfo, 0.5f);
+			Debug.DrawRay(origin, -transform.right * 0.5f, Color.cyan);
+			if (hit) {
+				hVelocity = 0f;
+				transform.position = hitInfo.point + transform.right * 0.5f - (origin - transform.position); // same as above
+			}
+		}
 	}
 
     public Direction getDirection() {
